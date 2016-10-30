@@ -1,6 +1,14 @@
 import java.util.Scanner;
 
+/**
+ * @author guna
+ *
+ */
 public class InitializeCells {
+	/**
+	 * Initialize cells with starting values
+	 * @return sudoku cells
+	 */
 	public Cell[][] createNewCells() {
 		Cell[][] sudoku = new Cell[9][9];
 		Scanner reader = new Scanner(System.in);

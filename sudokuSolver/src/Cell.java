@@ -31,6 +31,10 @@ public class Cell {
 		this.possibleValues = possibleValues;
 	}
 
+	/**
+	 * updates the cell value if the list has only one possible value
+	 * @return ifUpdated
+	 */
 	public boolean updateCellValueIfPossible() {
 		if (possibleValues != null && possibleValues.size() == 1) {
 			cellValue = possibleValues.get(0);
@@ -39,6 +43,11 @@ public class Cell {
 			return false;
 	}
 	
+	
+	/**
+	 * Workaround for a toString() of sudoku block
+	 * @param sudoku
+	 */
 	public static void displaySudoku(Cell[][] sudoku){
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {

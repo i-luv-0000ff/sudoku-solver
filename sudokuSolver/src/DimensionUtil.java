@@ -1,34 +1,96 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author guna
+ *
+ */
 public class DimensionUtil {
 	//work around testing
 	public static void main(String args[]){
 		Dimension dimeCurrent = new Dimension();
-		dimeCurrent.x = 5;
+		dimeCurrent.x = 8;
 		dimeCurrent.y = 5;
-		getBoxDimensions(dimeCurrent);
+		System.out.println(getBoxDimensions(dimeCurrent));
 	}
 	
-	public static List<Dimension> getBoxDimensions(Dimension dime) {
+	/**
+	 * Get dimensions of the row for the given cell
+	 * @param dime
+	 * @return list of dimension in the horizontal row
+	 */
+	public static List<Dimension> getHorizontalDimensions(Dimension dime) {
+		// TODO Have to be upgraded to run out of the checked boxes
 		List<Dimension> boxDimes = new ArrayList<Dimension>();
-		Dimension startDime = findBoxStartDime(dime);
-		for(int x=startDime.x; x<startDime.x+3;x++){
-			for(int y=startDime.y; y<startDime.y+3;y++){
+		for(int y=0;y<9;y++){
+			// Eliminating the current cell
+			if(y!=dime.y){
 				Dimension dimeCurrent = new Dimension();
-				dimeCurrent.x = x;
+				dimeCurrent.x = dime.x;
 				dimeCurrent.y = y;
 				boxDimes.add(dimeCurrent);
 			}
 		}
 		return boxDimes;
-
+	}
+	
+	/**
+	 * Get dimensions of the column for the given cell
+	 * @param dime
+	 * @return list of dimension in the vertical column
+	 */
+	public static List<Dimension> getVerticalDimensions(Dimension dime) {
+		// TODO Have to be upgraded to run out of the checked boxes
+		List<Dimension> boxDimes = new ArrayList<Dimension>();
+		for(int x=0;x<9;x++){
+			// Eliminating the current cell
+			if(x!=dime.x){
+				Dimension dimeCurrent = new Dimension();
+				dimeCurrent.x = x;
+				dimeCurrent.y = dime.y;
+				boxDimes.add(dimeCurrent);
+			}
+		}
+		return boxDimes;
+	}
+	
+	/**
+	 * Get dimensions for a given cell present in the current box
+	 * @param dime
+	 * @return list of dimension in the box
+	 */
+	public static List<Dimension> getBoxDimensions(Dimension dime) {
+		List<Dimension> boxDimes = new ArrayList<Dimension>();
+		Dimension startDime = findBoxStartDime(dime);
+		for(int x=startDime.x; x<startDime.x+3;x++){
+			for(int y=startDime.y; y<startDime.y+3;y++){
+				// Eliminating the current cell
+				if(x!=dime.x && y!=dime.y){
+					Dimension dimeCurrent = new Dimension();
+					dimeCurrent.x = x;
+					dimeCurrent.y = y;
+					boxDimes.add(dimeCurrent);
+				}
+			}
+		}
+		return boxDimes;
 	}
 
+	/**
+	 * Get a cell value for a given dimension in the given sudoku matrix
+	 * @param sudoku
+	 * @param dime
+	 * @return cell dimensions
+	 */
 	public static Cell getCell(Cell[][] sudoku, Dimension dime) {
 		return sudoku[dime.x][dime.y];
 	}
 
+	/**
+	 * Finds the starting dimension value of a box for a given dimension value
+	 * @param Dimension dime
+	 * @return box staring value
+	 */
 	private static Dimension findBoxStartDime(Dimension dime) {
 		// divide by zero adjustment
 		dime.x = dime.x + 1;
@@ -42,9 +104,8 @@ public class DimensionUtil {
 			boxDime.y = dime.y / 3;
 		else
 			boxDime.y = (dime.y / 3) + 1;
-		// divide by zero adjustment
-		boxDime.x = boxDime.x - 1;
-		boxDime.y = boxDime.y - 1;
+		boxDime.x = (boxDime.x*3)-2;
+		boxDime.y = (boxDime.y*3)-2;
 		return boxDime;
 	}
 }
