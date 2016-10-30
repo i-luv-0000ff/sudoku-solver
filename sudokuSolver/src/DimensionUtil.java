@@ -6,15 +6,6 @@ import java.util.List;
  *
  */
 public class DimensionUtil {
-	//work around testing
-	public static void main(String args[]){
-		Dimension dimeCurrent = new Dimension(8,5);
-		System.out.println(dimeCurrent);
-		System.out.println(getBoxDimensions(dimeCurrent));
-		System.out.println(getHorizontalDimensions(dimeCurrent));
-		System.out.println(getVerticalDimensions(dimeCurrent));
-	}
-	
 	/**
 	 * Get dimensions of the row for the given cell
 	 * @param dime
