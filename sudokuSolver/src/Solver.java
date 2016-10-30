@@ -17,14 +17,35 @@ public class Solver {
 	 * Updates the possible values for a cell
 	 */
 	public static void updatePossibleValues(){
+		while(checkIfAnyValueToUpdate()){
+			for (int x = 0; x < 9; x++) {
+				for (int y = 0; y < 9; y++) {
+					Dimension dime = new Dimension(x,y);
+					Cell cellToUpdate = DimensionUtil.getCell(sudoku, dime);
+					if(cellToUpdate.getCellValue()==0){
+						sweepBoxValues(dime, cellToUpdate);
+						sweepHorizontalValues(dime, cellToUpdate);
+						sweepVerticalValues(dime, cellToUpdate);
+						cellToUpdate.updateCellValueIfPossible();
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks if any value is zero
+	 * @return if any value is empty
+	 */
+	private static boolean checkIfAnyValueToUpdate(){
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
 				Dimension dime = new Dimension(x,y);
-				sweepBoxValues(dime, DimensionUtil.getCell(sudoku, dime));
-				sweepHorizontalValues(dime, DimensionUtil.getCell(sudoku, dime));
-				sweepVerticalValues(dime, DimensionUtil.getCell(sudoku, dime));
+				if(DimensionUtil.getCell(sudoku, dime).getCellValue()==0)
+					return true;
 			}
 		}
+		return false;
 	}
 	
 	/**
