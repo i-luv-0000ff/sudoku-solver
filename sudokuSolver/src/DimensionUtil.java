@@ -8,10 +8,11 @@ import java.util.List;
 public class DimensionUtil {
 	//work around testing
 	public static void main(String args[]){
-		Dimension dimeCurrent = new Dimension();
-		dimeCurrent.x = 8;
-		dimeCurrent.y = 5;
+		Dimension dimeCurrent = new Dimension(8,5);
+		System.out.println(dimeCurrent);
 		System.out.println(getBoxDimensions(dimeCurrent));
+		System.out.println(getHorizontalDimensions(dimeCurrent));
+		System.out.println(getVerticalDimensions(dimeCurrent));
 	}
 	
 	/**
@@ -25,9 +26,7 @@ public class DimensionUtil {
 		for(int y=0;y<9;y++){
 			// Eliminating the current cell
 			if(y!=dime.y){
-				Dimension dimeCurrent = new Dimension();
-				dimeCurrent.x = dime.x;
-				dimeCurrent.y = y;
+				Dimension dimeCurrent = new Dimension(dime.x,y);
 				boxDimes.add(dimeCurrent);
 			}
 		}
@@ -45,9 +44,7 @@ public class DimensionUtil {
 		for(int x=0;x<9;x++){
 			// Eliminating the current cell
 			if(x!=dime.x){
-				Dimension dimeCurrent = new Dimension();
-				dimeCurrent.x = x;
-				dimeCurrent.y = dime.y;
+				Dimension dimeCurrent = new Dimension(x,dime.y);
 				boxDimes.add(dimeCurrent);
 			}
 		}
@@ -65,10 +62,8 @@ public class DimensionUtil {
 		for(int x=startDime.x; x<startDime.x+3;x++){
 			for(int y=startDime.y; y<startDime.y+3;y++){
 				// Eliminating the current cell
-				if(x!=dime.x && y!=dime.y){
-					Dimension dimeCurrent = new Dimension();
-					dimeCurrent.x = x;
-					dimeCurrent.y = y;
+				if(!(x==dime.x && y==dime.y)){
+					Dimension dimeCurrent = new Dimension(x,y);
 					boxDimes.add(dimeCurrent);
 				}
 			}
@@ -104,8 +99,11 @@ public class DimensionUtil {
 			boxDime.y = dime.y / 3;
 		else
 			boxDime.y = (dime.y / 3) + 1;
-		boxDime.x = (boxDime.x*3)-2;
-		boxDime.y = (boxDime.y*3)-2;
+		boxDime.x = (boxDime.x*3)-3;
+		boxDime.y = (boxDime.y*3)-3;
+		// revert divide by zero adjustment
+		dime.x = dime.x - 1;
+		dime.y = dime.y - 1;
 		return boxDime;
 	}
 }

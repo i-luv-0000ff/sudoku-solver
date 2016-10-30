@@ -19,7 +19,10 @@ public class Solver {
 	public static void updatePossibleValues(){
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
-				sudoku.
+				Dimension dime = new Dimension(x,y);
+				sweepBoxValues(dime, DimensionUtil.getCell(sudoku, dime));
+				sweepHorizontalValues(dime, DimensionUtil.getCell(sudoku, dime));
+				sweepVerticalValues(dime, DimensionUtil.getCell(sudoku, dime));
 			}
 		}
 	}
