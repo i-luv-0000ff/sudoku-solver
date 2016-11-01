@@ -43,7 +43,7 @@ public class DimensionUtil {
 	}
 	
 	/**
-	 * Get dimensions for a given cell present in the current box
+	 * Get dimensions of the box for a given cell 
 	 * @param dime
 	 * @return list of dimension in the box
 	 */
@@ -73,7 +73,7 @@ public class DimensionUtil {
 	}
 
 	/**
-	 * Finds the starting dimension value of a box for a given dimension value
+	 * Finds the starting (top left) dimension value of a box for a given dimension value
 	 * @param Dimension dime
 	 * @return box staring value
 	 */

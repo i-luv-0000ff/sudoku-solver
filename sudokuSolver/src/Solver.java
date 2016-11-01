@@ -49,7 +49,7 @@ public class Solver {
 	}
 	
 	/**
-	 * Eliminates possible values for a given cell already present in the given horizontal row
+	 * Eliminates impossible values in possible value list for a given cell in the horizontal row
 	 * @param row
 	 * @param updateCell
 	 */
@@ -62,7 +62,7 @@ public class Solver {
 	}
 	
 	/**
-	 * Eliminates possible values for a given cell already present in the given Vertical column
+	 * Eliminates impossible values in possible value list for a given cell in the Vertical column
 	 * @param column
 	 * @param updateCell
 	 */
@@ -75,7 +75,7 @@ public class Solver {
 	}
 	
 	/**
-	 * Eliminates possible values for a given cell already present in the given current box
+	 * Eliminates impossible values in possible value list for a given cell in the box
 	 * @param column
 	 * @param updateCell
 	 */
