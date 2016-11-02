@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cell {
+public class Cell implements Cloneable{
 	private int cellValue;
 	private List<Integer> possibleValues = new ArrayList<Integer>(){{
 		add(1);
@@ -38,12 +38,48 @@ public class Cell {
 	public boolean updateCellValueIfPossible() {
 		if (possibleValues != null && possibleValues.size() == 1) {
 			cellValue = possibleValues.get(0);
+			possibleValues.clear();
 			return true;
 		} else
 			return false;
 	}
 	
 	
+	protected Cell clone() {
+		Cell cellSend = new Cell();
+		cellSend.cellValue = new Integer(this.cellValue);
+		cellSend.possibleValues = new ArrayList<Integer>(this.possibleValues);
+		return cellSend;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + cellValue;
+		result = prime * result + ((possibleValues == null) ? 0 : possibleValues.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cell other = (Cell) obj;
+		if (cellValue != other.cellValue)
+			return false;
+		if (possibleValues == null) {
+			if (other.possibleValues != null)
+				return false;
+		} else if (!possibleValues.equals(other.possibleValues))
+			return false;
+		return true;
+	}
+
 	/**
 	 * Workaround for a toString() of sudoku block
 	 * @param sudoku

@@ -15,11 +15,8 @@ public class DimensionUtil {
 		// TODO Have to be upgraded to run out of the checked boxes
 		List<Dimension> boxDimes = new ArrayList<Dimension>();
 		for(int y=0;y<9;y++){
-			// Eliminating the current cell
-			if(y!=dime.y){
-				Dimension dimeCurrent = new Dimension(dime.x,y);
-				boxDimes.add(dimeCurrent);
-			}
+			Dimension dimeCurrent = new Dimension(dime.x,y);
+			boxDimes.add(dimeCurrent);
 		}
 		return boxDimes;
 	}
@@ -33,11 +30,8 @@ public class DimensionUtil {
 		// TODO Have to be upgraded to run out of the checked boxes
 		List<Dimension> boxDimes = new ArrayList<Dimension>();
 		for(int x=0;x<9;x++){
-			// Eliminating the current cell
-			if(x!=dime.x){
-				Dimension dimeCurrent = new Dimension(x,dime.y);
-				boxDimes.add(dimeCurrent);
-			}
+			Dimension dimeCurrent = new Dimension(x,dime.y);
+			boxDimes.add(dimeCurrent);
 		}
 		return boxDimes;
 	}
@@ -52,11 +46,8 @@ public class DimensionUtil {
 		Dimension startDime = findBoxStartDime(dime);
 		for(int x=startDime.x; x<startDime.x+3;x++){
 			for(int y=startDime.y; y<startDime.y+3;y++){
-				// Eliminating the current cell
-				if(!(x==dime.x && y==dime.y)){
-					Dimension dimeCurrent = new Dimension(x,y);
-					boxDimes.add(dimeCurrent);
-				}
+				Dimension dimeCurrent = new Dimension(x,y);
+				boxDimes.add(dimeCurrent);
 			}
 		}
 		return boxDimes;
