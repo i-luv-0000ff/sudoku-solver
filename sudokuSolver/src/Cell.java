@@ -3,7 +3,10 @@ import java.util.List;
 
 public class Cell implements Cloneable{
 	private int cellValue;
-	private List<Integer> possibleValues = new ArrayList<Integer>(){{
+	private List<Integer> possibleValues = new ArrayList<Integer>(){
+		private static final long serialVersionUID = -1337935474300432552L;
+
+	{
 		add(1);
 		add(2);
 		add(3);
@@ -87,10 +90,16 @@ public class Cell implements Cloneable{
 	public static void displaySudoku(Cell[][] sudoku){
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
+				if(y==3||y==6)
+					System.out.print(" | ");
 				Dimension dime = new Dimension(x,y);
 				System.out.print(DimensionUtil.getCell(sudoku, dime).getCellValue());
 			}
 			System.out.println(" ");
+			if(x==2||x==5){
+				System.out.print("---------------");
+				System.out.println(" ");
+			}
 		}
 	}
 }

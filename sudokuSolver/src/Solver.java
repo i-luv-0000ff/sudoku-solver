@@ -5,6 +5,7 @@ import java.util.List;
  * @author guna
  *
  */
+// TODO: Change this class to have non static methods. Re-factor createNewCells()
 public class Solver {
 	
 	private static Cell[][] sudoku;
@@ -13,29 +14,32 @@ public class Solver {
 	public static void main(String args[]) {
 		InitializeCells ic = new InitializeCells();
 		sudoku = ic.createNewCells();
+		
+		// run forever till solution
 		while(checkIfAnyValueToUpdate()){
 			updatePossibleValues();
-		}
-		System.out.println("");
-		Cell.displaySudoku(sudoku);
-	}
-	
-	/**
-	 * Updates the possible values for a cell
-	 */
-	public static void updatePossibleValues(){
-		for (int x = 0; x < 9; x++) {
-			for (int y = 0; y < 9; y++) {
-				Dimension dime = new Dimension(x,y);
-				Cell cellToUpdate = DimensionUtil.getCell(sudoku, dime);
-				if(cellToUpdate.getCellValue()==0){
-					sweepBoxValues(dime, cellToUpdate);
-					sweepHorizontalValues(dime, cellToUpdate);
-					sweepVerticalValues(dime, cellToUpdate);
-					cellToUpdate.updateCellValueIfPossible();
+			updateAllBoxUniqLstNo();
+			
+			// cloning object for real
+			sudoPrev = new Cell[9][9];
+			for (int x = 0; x < 9; x++) {
+				for (int y = 0; y < 9; y++) {
+					sudoPrev[x][y] = sudoku[x][y].clone();
 				}
 			}
+			// cloning object for real
+			
+			System.out.println("");
+			System.out.println("ITERATION");
+			Cell.displaySudoku(sudoku);
 		}
+	}
+
+	/**
+	 * Calls the method uniqueNoUpdate() for all the boxes available.
+	 * Check if previous and current values are the same and updates unique values
+	 */
+	private static void updateAllBoxUniqLstNo() {
 		if(Arrays.deepEquals(sudoku, sudoPrev)){
 			boolean sweepValuesAgain = false;
 			for (int x = 0; x < 9; x++) {
@@ -56,17 +60,26 @@ public class Solver {
 					break;
 			}
 		}
-		// cloning object for real
-		sudoPrev = new Cell[9][9];
+	}
+	
+	/**
+	 * Updates the possible values for a cell.
+	 * Does the same foe all boxes.
+	 */
+	public static void updatePossibleValues(){
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
-				sudoPrev[x][y] = sudoku[x][y].clone();
+				Dimension dime = new Dimension(x,y);
+				Cell cellToUpdate = DimensionUtil.getCell(sudoku, dime);
+				if(cellToUpdate.getCellValue()==0){
+					sweepBoxValues(dime, cellToUpdate);
+					sweepHorizontalValues(dime, cellToUpdate);
+					sweepVerticalValues(dime, cellToUpdate);
+					cellToUpdate.updateCellValueIfPossible();
+				}
 			}
 		}
-		// cloning object for real
-		System.out.println("");
-		System.out.println("ITERATION");
-		Cell.displaySudoku(sudoku);
+		
 	}
 
 	/**
@@ -74,6 +87,7 @@ public class Solver {
 	 * @param cellToUpdate
 	 * @param dime
 	 */
+	//TODO: Re-factor 3 piece of code to a method
 	private static void uniqueNoUpdate(Cell cellToUpdate, Dimension dime) {
 		for(int possibleValue : cellToUpdate.getPossibleValues()){
 			List<Dimension> boxDimes = DimensionUtil.getBoxDimensions(dime);
