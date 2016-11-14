@@ -1,22 +1,23 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cell implements Cloneable{
+public class Cell implements Cloneable {
 	private int cellValue;
-	private List<Integer> possibleValues = new ArrayList<Integer>(){
+	private List<Integer> possibleValues = new ArrayList<Integer>() {
 		private static final long serialVersionUID = -1337935474300432552L;
 
-	{
-		add(1);
-		add(2);
-		add(3);
-		add(4);
-		add(5);
-		add(6);
-		add(7);
-		add(8);
-		add(9);
-	}};
+		{
+			add(1);
+			add(2);
+			add(3);
+			add(4);
+			add(5);
+			add(6);
+			add(7);
+			add(8);
+			add(9);
+		}
+	};
 
 	public int getCellValue() {
 		return cellValue;
@@ -36,6 +37,7 @@ public class Cell implements Cloneable{
 
 	/**
 	 * updates the cell value if the list has only one possible value
+	 * 
 	 * @return ifUpdated
 	 */
 	public boolean updateCellValueIfPossible() {
@@ -46,8 +48,7 @@ public class Cell implements Cloneable{
 		} else
 			return false;
 	}
-	
-	
+
 	protected Cell clone() {
 		Cell cellSend = new Cell();
 		cellSend.cellValue = new Integer(this.cellValue);
@@ -85,20 +86,21 @@ public class Cell implements Cloneable{
 
 	/**
 	 * Workaround for a toString() of sudoku block
+	 * 
 	 * @param sudoku
 	 */
-	public static void displaySudoku(Cell[][] sudoku){
+	public static void displaySudoku(Cell[][] sudoku) {
 		System.out.println("");
 		System.out.println("ITERATION");
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
-				if(y==3||y==6)
+				if (y == 3 || y == 6)
 					System.out.print(" | ");
-				Dimension dime = new Dimension(x,y);
+				Dimension dime = new Dimension(x, y);
 				System.out.print(DimensionUtil.getCell(sudoku, dime).getCellValue());
 			}
 			System.out.println(" ");
-			if(x==2||x==5){
+			if (x == 2 || x == 5) {
 				System.out.print("---------------");
 				System.out.println(" ");
 			}
