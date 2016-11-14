@@ -101,6 +101,7 @@ public class Solver {
 			if(isUnique){
 				cellToUpdate.setCellValue(possibleValue);
 				break;
+				//TODO : Update sweep values for a specific box 
 			}
 			
 			List<Dimension> horiDimes = DimensionUtil.getHorizontalDimensions(dime);
