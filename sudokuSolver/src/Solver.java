@@ -17,7 +17,7 @@ public class Solver {
 		sudoku = ic.createNewCells();
 
 		// run forever till solution
-		while (checkIfAnyValueToUpdate()) {
+		while (checkIfAnyCellToBeSolved()) {
 			updatePossibleValues();
 			updateAllBoxUniqLstNo();
 
@@ -62,7 +62,8 @@ public class Solver {
 	}
 
 	/**
-	 * Updates cell value for a cell if it has only one possible value in the
+	 * Eliminates impossible values in possible value list in all cells, also
+	 * updates cell value for a cell if it has only one possible value in the
 	 * possible value list. Does the same for all boxes.
 	 */
 	public static void updatePossibleValues() {
@@ -86,6 +87,8 @@ public class Solver {
 					// horizontally, vertically, and inside box.
 					dimes = DimensionUtil.getVerticalDimensions(dime);
 					sweepValuesWithDimes(dime, cellToUpdate, dimes);
+					// Updates cell value for a cell if it has only one possible
+					// value in the possible value list
 					cellToUpdate.updateCellValueIfPossible();
 				}
 			}
@@ -175,7 +178,7 @@ public class Solver {
 	 * 
 	 * @return if any value is empty
 	 */
-	private static boolean checkIfAnyValueToUpdate() {
+	private static boolean checkIfAnyCellToBeSolved() {
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
 				Dimension dime = new Dimension(x, y);
