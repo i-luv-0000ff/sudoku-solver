@@ -62,7 +62,7 @@ public class Solver {
 	
 	/**
 	 * Updates the possible values for a cell.
-	 * Does the same foe all boxes.
+	 * Does the same for all boxes.
 	 */
 	public static void updatePossibleValues(){
 		for (int x = 0; x < 9; x++) {
@@ -70,9 +70,15 @@ public class Solver {
 				Dimension dime = new Dimension(x,y);
 				Cell cellToUpdate = DimensionUtil.getCell(sudoku, dime);
 				if(cellToUpdate.getCellValue()==0){
-					sweepBoxValues(dime, cellToUpdate);
-					sweepHorizontalValues(dime, cellToUpdate);
-					sweepVerticalValues(dime, cellToUpdate);
+					// TODO  Have to be upgraded to run out of the checked boxes
+					List<Dimension> dimes = DimensionUtil.getBoxDimensions(dime);
+					sweepValuesWithDimes(dime, cellToUpdate, dimes);
+					// TODO  Have to be upgraded to run out of the checked boxes
+					dimes = DimensionUtil.getHorizontalDimensions(dime);
+					sweepValuesWithDimes(dime, cellToUpdate, dimes);
+					// TODO  Have to be upgraded to run out of the checked boxes
+					dimes = DimensionUtil.getVerticalDimensions(dime);
+					sweepValuesWithDimes(dime, cellToUpdate, dimes);
 					cellToUpdate.updateCellValueIfPossible();
 				}
 			}
@@ -156,49 +162,18 @@ public class Solver {
 	}
 	
 	/**
-	 * Eliminates impossible values in possible value list for a given cell in the horizontal row
-	 * @param row
+	 * Eliminates impossible values in possible value list for a given cell for given dimensions
+	 * @param dime
 	 * @param updateCell
+	 * @param dimes
 	 */
-	private static void sweepHorizontalValues(Dimension dime, Cell updateCell){
-		// TODO  Have to be upgraded to run out of the checked boxes
-		List<Dimension> horiDimes = DimensionUtil.getHorizontalDimensions(dime);
+	private static void sweepValuesWithDimes(Dimension dime, Cell updateCell, List<Dimension> dimes){
 		// excluding already present dimension
-		horiDimes.remove(dime);
-		for(Dimension horiDime : horiDimes){
+		dimes.remove(dime);
+		for(Dimension eachDime : dimes){
 			// removing horizontal available values from possible values
-			updateCell.getPossibleValues().remove(new Integer(DimensionUtil.getCell(sudoku, horiDime).getCellValue()));
+			updateCell.getPossibleValues().remove(new Integer(DimensionUtil.getCell(sudoku, eachDime).getCellValue()));
 		}
 	}
 	
-	/**
-	 * Eliminates impossible values in possible value list for a given cell in the Vertical column
-	 * @param column
-	 * @param updateCell
-	 */
-	private static void sweepVerticalValues(Dimension dime, Cell updateCell){
-		// TODO  Have to be upgraded to run out of the checked boxes
-		List<Dimension> vertDimes = DimensionUtil.getVerticalDimensions(dime);
-		// excluding already present dimension
-		vertDimes.remove(dime);
-		for(Dimension vertDime : vertDimes){
-			// removing vertical available values from possible values
-			updateCell.getPossibleValues().remove(new Integer(DimensionUtil.getCell(sudoku, vertDime).getCellValue()));
-		}
-	}
-	
-	/**
-	 * Eliminates impossible values in possible value list for a given cell in the box
-	 * @param column
-	 * @param updateCell
-	 */
-	private static void sweepBoxValues(Dimension dime, Cell updateCell){
-		List<Dimension> boxDimes = DimensionUtil.getBoxDimensions(dime);
-		// excluding already present dimension
-		boxDimes.remove(dime);
-		for(Dimension boxDime : boxDimes){
-			// removing vertical available values from possible values
-			updateCell.getPossibleValues().remove(new Integer(DimensionUtil.getCell(sudoku, boxDime).getCellValue()));
-		}
-	}
 }
