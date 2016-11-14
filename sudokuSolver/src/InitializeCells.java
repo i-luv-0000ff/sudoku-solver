@@ -26,7 +26,6 @@ public class InitializeCells {
 				count++;
 			}
 		}
-		Cell.displaySudoku(sudoku);
 		return sudoku;
 	}
 }

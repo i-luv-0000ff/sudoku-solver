@@ -29,8 +29,6 @@ public class Solver {
 			}
 			// cloning object for real
 			
-			System.out.println("");
-			System.out.println("ITERATION");
 			Cell.displaySudoku(sudoku);
 		}
 	}
@@ -87,7 +85,6 @@ public class Solver {
 	 * @param cellToUpdate
 	 * @param dime
 	 */
-	//TODO: Re-factor 3 piece of code to a method
 	private static void uniqueNoUpdate(Cell cellToUpdate, Dimension dime) {
 		for(int possibleValue : cellToUpdate.getPossibleValues()){
 			List<Dimension> boxDimes = DimensionUtil.getBoxDimensions(dime);

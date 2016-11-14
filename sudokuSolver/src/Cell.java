@@ -88,6 +88,8 @@ public class Cell implements Cloneable{
 	 * @param sudoku
 	 */
 	public static void displaySudoku(Cell[][] sudoku){
+		System.out.println("");
+		System.out.println("ITERATION");
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
 				if(y==3||y==6)
