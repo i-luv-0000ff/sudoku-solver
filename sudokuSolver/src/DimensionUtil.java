@@ -1,11 +1,31 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author guna
  *
  */
 public class DimensionUtil {
+
+	/**
+	 * Get dimension of a corresponding cell. (Horizontal, vertical, box values)
+	 * Returns only unique values.
+	 * 
+	 * @param dime
+	 * @return list of dimension
+	 */
+	public static List<Dimension> getCorresDimensions(Dimension dime) {
+		List<Dimension> dimes = new ArrayList<Dimension>();
+		Set<Dimension> dupeLessDimes = new HashSet<Dimension>();
+		dupeLessDimes.addAll(getHorizontalDimensions(dime));
+		dupeLessDimes.addAll(getVerticalDimensions(dime));
+		dupeLessDimes.addAll(getBoxDimensions(dime));
+		dimes.addAll(dupeLessDimes);
+		return dimes;
+	}
+
 	/**
 	 * Get dimensions of the row for the given cell
 	 * 
