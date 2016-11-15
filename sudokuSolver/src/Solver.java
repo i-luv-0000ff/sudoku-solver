@@ -107,6 +107,7 @@ public class Solver {
 	private static void uniqueNoUpdate(Cell cellToUpdate, Dimension dime) {
 		for (int possibleValue : cellToUpdate.getPossibleValues()) {
 			boolean isUnique;
+			// TODO : Remove dimensions without cell values
 			List<Dimension> dimes = DimensionUtil.getBoxDimensions(dime);
 			isUnique = checkUnique(dime, possibleValue, dimes);
 			if (isUnique) {
@@ -115,6 +116,7 @@ public class Solver {
 				// TODO : Update sweep values for a specific box
 			}
 
+			// TODO : Remove dimensions without cell values
 			dimes = DimensionUtil.getHorizontalDimensions(dime);
 			isUnique = checkUnique(dime, possibleValue, dimes);
 			if (isUnique) {
@@ -123,6 +125,7 @@ public class Solver {
 				// TODO : Update sweep values for a specific box
 			}
 
+			// TODO : Remove dimensions without cell values
 			dimes = DimensionUtil.getVerticalDimensions(dime);
 			isUnique = checkUnique(dime, possibleValue, dimes);
 			if (isUnique) {
@@ -146,8 +149,8 @@ public class Solver {
 		boolean isUnique = true;
 		// excluding already present dimension
 		dimes.remove(dime);
-		for (Dimension boxDime : dimes) {
-			Cell compareCell = DimensionUtil.getCell(sudoku, boxDime);
+		for (Dimension eachDime : dimes) {
+			Cell compareCell = DimensionUtil.getCell(sudoku, eachDime);
 			if (compareCell.getCellValue() == 0 && compareCell.getPossibleValues().contains(possibleValue)) {
 				isUnique = false;
 				break;
