@@ -50,6 +50,11 @@ public class Solver {
 		// TODO : For every dimension updateLockedCandidates1() methods clears
 		// row and column, so consider 3rows and 3column for a box and re-factor
 		// the below code, rather than for every single dimension.
+		// (x,y) =
+		// {(0,0)(1,1)(2,2):(0,3)(1,4)(2,5):(0,6)(1,7)(2,8)::(3,0)(4,1)(5,2):(3,3)(4,4)(5,5):(3,6)(4,7)(5,8)::(6,0)(7,1)(8,2):(6,3)(7,4)(8,5):(6,6)(7,7)(8,8)}
+
+		// TODO : Think to eliminate the above 2 criteria and keep the existing
+		// code
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
 				Dimension dime = new Dimension(x, y);
