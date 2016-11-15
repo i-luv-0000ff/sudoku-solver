@@ -17,13 +17,11 @@ public class DimensionUtil {
 	 * @return list of dimension
 	 */
 	public static List<Dimension> getCorresDimensions(Dimension dime) {
-		List<Dimension> dimes = new ArrayList<Dimension>();
 		Set<Dimension> dupeLessDimes = new HashSet<Dimension>();
 		dupeLessDimes.addAll(getHorizontalDimensions(dime));
 		dupeLessDimes.addAll(getVerticalDimensions(dime));
 		dupeLessDimes.addAll(getBoxDimensions(dime));
-		dimes.addAll(dupeLessDimes);
-		return dimes;
+		return new ArrayList<Dimension>(dupeLessDimes);
 	}
 
 	/**
@@ -112,5 +110,14 @@ public class DimensionUtil {
 		dime.x = dime.x - 1;
 		dime.y = dime.y - 1;
 		return boxDime;
+	}
+
+	public static List<Dimension> removeDimesWithValues(Cell[][] sudoku, List<Dimension> dimes) {
+		List<Dimension> valuesRemoved = new ArrayList<Dimension>();
+		for (Dimension dime : dimes) {
+			if (getCell(sudoku, dime).getCellValue() == 0)
+				valuesRemoved.add(dime);
+		}
+		return valuesRemoved;
 	}
 }

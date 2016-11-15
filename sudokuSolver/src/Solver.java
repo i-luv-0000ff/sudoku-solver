@@ -1,5 +1,7 @@
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author guna
@@ -19,7 +21,9 @@ public class Solver {
 		// run forever till solution
 		while (checkIfAnyCellToBeSolved()) {
 			updatePossibleValues();
-			updateAllBoxUniqLstNo();
+			if (updateAllBoxUniqLstNo() == null) {
+				updateLockedCandidates1All();
+			}
 
 			// cloning object for real
 			sudoPrev = new Cell[9][9];
@@ -35,30 +39,143 @@ public class Solver {
 	}
 
 	/**
-	 * Calls the method uniqueNoUpdate() for all the boxes available. Check if
-	 * previous and current values are the same and updates unique values
+	 * Calls for updateLockedCandidates1() on all the boxes.
+	 * 
+	 * @return if any locked candidate updated
 	 */
-	private static void updateAllBoxUniqLstNo() {
+	private static boolean updateLockedCandidates1All() {
+		// TODO : Get dimensions for all variables and remove items with values
+		// already available. Do this for similar situations all over.
+
+		// TODO : For every dimension updateLockedCandidates1() methods clears
+		// row and column, so consider 3rows and 3column for a box and re-factor
+		// the below code, rather than for every single dimension.
+		for (int x = 0; x < 9; x++) {
+			for (int y = 0; y < 9; y++) {
+				Dimension dime = new Dimension(x, y);
+				Cell cell = DimensionUtil.getCell(sudoku, dime);
+				if (cell.getCellValue() == 0) {
+					if (updateLockedCandidates1(dime))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Update locked candidates in the row and column of the given dimension.
+	 * Returns true if updated and false if not.
+	 * 
+	 * @param dime
+	 * @return if row or column updated
+	 */
+	private static boolean updateLockedCandidates1(Dimension dime) {
+		// Locked candidate is a candidate within a box is restricted to one row
+		// or column. Since one of these cells must contain that specific
+		// candidate, the candidate can safely be excluded from the remaining
+		// cells in that row or column outside of the box.
+		// Reference : angusj.com/sudoku/hints.php
+
+		List<Dimension> boxDimes = DimensionUtil.getBoxDimensions(dime);
+		boxDimes = DimensionUtil.removeDimesWithValues(sudoku, boxDimes);
+		List<Dimension> horiDimes = DimensionUtil.getHorizontalDimensions(dime);
+		horiDimes = DimensionUtil.removeDimesWithValues(sudoku, horiDimes);
+		List<Dimension> vertDimes = DimensionUtil.getVerticalDimensions(dime);
+		vertDimes = DimensionUtil.removeDimesWithValues(sudoku, vertDimes);
+		if (eliminateLckdCandInOthrBoxes(boxDimes, horiDimes)) {
+			// TODO : Try to update only the dependents of updated values.
+			updatePossibleValues();
+			return true;
+		}
+		if (eliminateLckdCandInOthrBoxes(boxDimes, vertDimes)) {
+			// TODO : Try to update only the dependents of updated values.
+			updatePossibleValues();
+			return true;
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * Eliminate locked candidates from a row or column of the given dimension.
+	 * Returns as soon as it updates a value.
+	 * 
+	 * @param boxDimes
+	 * @param dimes
+	 * @return if updated
+	 */
+	private static boolean eliminateLckdCandInOthrBoxes(List<Dimension> boxDimes, List<Dimension> dimes) {
+		Set<Dimension> boxLeftOutDimes = new HashSet<Dimension>();
+		Set<Dimension> leftOutDimes = new HashSet<Dimension>();
+		Set<Integer> avoidDupValues = new HashSet<Integer>();
+		// Collecting all the values present in the row inside the box
+		for (Dimension commonRowOrColumn : DatastructureUtil.intersection(boxDimes, dimes)) {
+			avoidDupValues.addAll(DimensionUtil.getCell(sudoku, commonRowOrColumn).getPossibleValues());
+		}
+
+		boxLeftOutDimes.addAll(boxDimes);
+		boxLeftOutDimes.removeAll(dimes);
+
+		leftOutDimes.addAll(dimes);
+		leftOutDimes.removeAll(boxDimes);
+
+		for (Integer eachValue : avoidDupValues) {
+			boolean unique = true;
+			for (Dimension boxDime : boxLeftOutDimes) {
+				if (DimensionUtil.getCell(sudoku, boxDime).getPossibleValues().contains(eachValue)) {
+					unique = false;
+					break;
+				}
+			}
+			if (unique) {
+				removeNumInPossibleValues(eachValue, leftOutDimes);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Remove a integer in the possible value list for a given list of
+	 * dimensions.
+	 * 
+	 * @param eachValue
+	 * @param horiLeftOutDimes
+	 */
+	private static void removeNumInPossibleValues(Integer eachValue, Set<Dimension> horiLeftOutDimes) {
+		for (Dimension dime : horiLeftOutDimes) {
+			DimensionUtil.getCell(sudoku, dime).getPossibleValues().remove(new Integer(eachValue));
+		}
+	}
+
+	/**
+	 * Calls the method uniqueNoUpdate() for all the boxes available. Check if
+	 * previous and current values are the same and updates unique values.
+	 * Returns true if it is updated, false if the solving logic is on progress
+	 * and null if this didn't updated anything.
+	 * 
+	 * @return true, false, null
+	 */
+	private static Boolean updateAllBoxUniqLstNo() {
 		if (Arrays.deepEquals(sudoku, sudoPrev)) {
-			boolean sweepValuesAgain = false;
 			for (int x = 0; x < 9; x++) {
 				for (int y = 0; y < 9; y++) {
 					Dimension dime = new Dimension(x, y);
 					Cell cell = DimensionUtil.getCell(sudoku, dime);
 					if (cell.getCellValue() == 0) {
-						uniqueNoUpdate(cell, dime);
-						if (cell.getCellValue() != 0) {
+						if (uniqueNoUpdate(cell, dime)) {
 							// cell updated sweep values again
-							sweepValuesAgain = true;
 							cell.getPossibleValues().clear();
-							break;
+							return true;
 						}
 					}
 				}
-				if (sweepValuesAgain)
-					break;
 			}
+			return null;
 		}
+		return false;
 	}
 
 	/**
@@ -103,8 +220,9 @@ public class Solver {
 	 * 
 	 * @param cellToUpdate
 	 * @param dime
+	 * @return is updated
 	 */
-	private static void uniqueNoUpdate(Cell cellToUpdate, Dimension dime) {
+	private static boolean uniqueNoUpdate(Cell cellToUpdate, Dimension dime) {
 		for (int possibleValue : cellToUpdate.getPossibleValues()) {
 			boolean isUnique;
 			// TODO : Remove dimensions without cell values
@@ -112,7 +230,7 @@ public class Solver {
 			isUnique = checkUnique(dime, possibleValue, dimes);
 			if (isUnique) {
 				cellToUpdate.setCellValue(possibleValue);
-				break;
+				return true;
 				// TODO : Update sweep values for a specific box
 			}
 
@@ -121,7 +239,7 @@ public class Solver {
 			isUnique = checkUnique(dime, possibleValue, dimes);
 			if (isUnique) {
 				cellToUpdate.setCellValue(possibleValue);
-				break;
+				return true;
 				// TODO : Update sweep values for a specific box
 			}
 
@@ -130,10 +248,11 @@ public class Solver {
 			isUnique = checkUnique(dime, possibleValue, dimes);
 			if (isUnique) {
 				cellToUpdate.setCellValue(possibleValue);
-				break;
+				return true;
 				// TODO : Update sweep values for a specific box
 			}
 		}
+		return false;
 	}
 
 	/**
