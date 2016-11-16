@@ -80,10 +80,15 @@ public class Solver {
 	 * @return if row or column updated
 	 */
 	private static boolean updateLockedCandidates1Nd2(Dimension dime, boolean lockedCand1) {
-		// Locked candidate is a candidate within a box is restricted to one row
-		// or column. Since one of these cells must contain that specific
+		// Locked candidate1 is a candidate within a box is restricted to one
+		// row or column. Since one of these cells must contain that specific
 		// candidate, the candidate can safely be excluded from the remaining
 		// cells in that row or column outside of the box.
+		//
+		// Locked candidate2 is a candidate within a row or column is restricted
+		// to one box. Since one of these cells must contain that specific
+		// candidate, the candidate can safely be excluded from the remaining
+		// cells in the box.
 		//
 		// Reference : angusj.com/sudoku/hints.php
 
