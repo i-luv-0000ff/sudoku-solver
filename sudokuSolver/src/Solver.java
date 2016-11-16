@@ -22,7 +22,9 @@ public class Solver {
 		while (checkIfAnyCellToBeSolved()) {
 			updatePossibleValues();
 			if (updateAllBoxUniqLstNo() == null) {
-				updateLockedCandidates1All();
+				if (updateLockedCandidates1Nd2All(true)) {
+					updateLockedCandidates1Nd2All(false);
+				}
 			}
 
 			// cloning object for real
@@ -41,9 +43,10 @@ public class Solver {
 	/**
 	 * Calls for updateLockedCandidates1() on all the boxes.
 	 * 
+	 * @param lockedCand1
 	 * @return if any locked candidate updated
 	 */
-	private static boolean updateLockedCandidates1All() {
+	private static boolean updateLockedCandidates1Nd2All(boolean lockedCand1) {
 		// TODO : Get dimensions for all variables and remove items with values
 		// already available. Do this for similar situations all over.
 
@@ -60,7 +63,7 @@ public class Solver {
 				Dimension dime = new Dimension(x, y);
 				Cell cell = DimensionUtil.getCell(sudoku, dime);
 				if (cell.getCellValue() == 0) {
-					if (updateLockedCandidates1(dime))
+					if (updateLockedCandidates1Nd2(dime, lockedCand1))
 						return true;
 				}
 			}
@@ -73,13 +76,15 @@ public class Solver {
 	 * Returns true if updated and false if not.
 	 * 
 	 * @param dime
+	 * @param lockedCand1
 	 * @return if row or column updated
 	 */
-	private static boolean updateLockedCandidates1(Dimension dime) {
+	private static boolean updateLockedCandidates1Nd2(Dimension dime, boolean lockedCand1) {
 		// Locked candidate is a candidate within a box is restricted to one row
 		// or column. Since one of these cells must contain that specific
 		// candidate, the candidate can safely be excluded from the remaining
 		// cells in that row or column outside of the box.
+		//
 		// Reference : angusj.com/sudoku/hints.php
 
 		List<Dimension> boxDimes = DimensionUtil.getBoxDimensions(dime);
@@ -88,12 +93,12 @@ public class Solver {
 		horiDimes = DimensionUtil.removeDimesWithValues(sudoku, horiDimes);
 		List<Dimension> vertDimes = DimensionUtil.getVerticalDimensions(dime);
 		vertDimes = DimensionUtil.removeDimesWithValues(sudoku, vertDimes);
-		if (eliminateLckdCandInOthrBoxes(boxDimes, horiDimes)) {
+		if (eliminateLckdCandInOthrBoxes(boxDimes, horiDimes, lockedCand1)) {
 			// TODO : Try to update only the dependents of updated values.
 			updatePossibleValues();
 			return true;
 		}
-		if (eliminateLckdCandInOthrBoxes(boxDimes, vertDimes)) {
+		if (eliminateLckdCandInOthrBoxes(boxDimes, vertDimes, lockedCand1)) {
 			// TODO : Try to update only the dependents of updated values.
 			updatePossibleValues();
 			return true;
@@ -109,9 +114,11 @@ public class Solver {
 	 * 
 	 * @param boxDimes
 	 * @param dimes
+	 * @param lockedCand1
 	 * @return if updated
 	 */
-	private static boolean eliminateLckdCandInOthrBoxes(List<Dimension> boxDimes, List<Dimension> dimes) {
+	private static boolean eliminateLckdCandInOthrBoxes(List<Dimension> boxDimes, List<Dimension> dimes,
+			boolean lockedCand1) {
 		Set<Dimension> boxLeftOutDimes = new HashSet<Dimension>();
 		Set<Dimension> leftOutDimes = new HashSet<Dimension>();
 		Set<Integer> avoidDupValues = new HashSet<Integer>();
@@ -128,14 +135,14 @@ public class Solver {
 
 		for (Integer eachValue : avoidDupValues) {
 			boolean unique = true;
-			for (Dimension boxDime : boxLeftOutDimes) {
+			for (Dimension boxDime : lockedCand1 ? boxLeftOutDimes : leftOutDimes) {
 				if (DimensionUtil.getCell(sudoku, boxDime).getPossibleValues().contains(eachValue)) {
 					unique = false;
 					break;
 				}
 			}
 			if (unique) {
-				removeNumInPossibleValues(eachValue, leftOutDimes);
+				removeNumInPossibleValues(eachValue, lockedCand1 ? leftOutDimes : boxLeftOutDimes);
 				return true;
 			}
 		}
