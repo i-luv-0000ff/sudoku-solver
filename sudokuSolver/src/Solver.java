@@ -244,6 +244,7 @@ public class Solver {
 						if (uniqueNoUpdate(cell, dime)) {
 							// cell updated sweep values again
 							cell.getPossibleValues().clear();
+							cell.updateCellValueIfPossible();
 							updatePossibleValues();
 							return true;
 						}
