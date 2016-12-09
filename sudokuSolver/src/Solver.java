@@ -53,18 +53,21 @@ public class Solver {
 		dimes.add(new Dimension(8, 8));
 		for (Dimension dime : dimes) {
 			List<Dimension> nakedDimes = DimensionUtil.getBoxDimensions(dime);
+			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
 			if (nakedDimes.equals(nakedPairs(nakedDimes))) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;
 			}
 			nakedDimes = DimensionUtil.getHorizontalDimensions(dime);
+			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
 			if (nakedDimes.equals(nakedPairs(nakedDimes))) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;
 			}
 			nakedDimes = DimensionUtil.getVerticalDimensions(dime);
+			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
 			if (nakedDimes.equals(nakedPairs(nakedDimes))) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
@@ -90,6 +93,24 @@ public class Solver {
 			}
 		}
 		return finalDimes;
+	}
+
+	private static boolean nakedIdenticals(List<Dimension> dimes) {
+		List<Dimension> finalDimes = new ArrayList<Dimension>(dimes);
+		for (Dimension dime : dimes) {
+			Cell cell = DimensionUtil.getCell(sudoku, dime);
+			for (int possibleVal : cell.getPossibleValues()) {
+				finalDimes.remove(dime);
+				int count = 0;
+				for (Dimension finalDime : finalDimes) {
+					Cell compareCell = DimensionUtil.getCell(sudoku, finalDime);
+					if (compareCell.getPossibleValues().contains(possibleVal)) {
+						count++;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
