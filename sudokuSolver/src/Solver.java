@@ -54,21 +54,21 @@ public class Solver {
 		for (Dimension dime : dimes) {
 			List<Dimension> nakedDimes = DimensionUtil.getBoxDimensions(dime);
 			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
-			if (nakedDimes.equals(nakedPairs(nakedDimes))) {
+			if (!nakedDimes.equals(nakedPairs(nakedDimes))) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;
 			}
 			nakedDimes = DimensionUtil.getHorizontalDimensions(dime);
 			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
-			if (nakedDimes.equals(nakedPairs(nakedDimes))) {
+			if (!nakedDimes.equals(nakedPairs(nakedDimes))) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;
 			}
 			nakedDimes = DimensionUtil.getVerticalDimensions(dime);
 			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
-			if (nakedDimes.equals(nakedPairs(nakedDimes))) {
+			if (!nakedDimes.equals(nakedPairs(nakedDimes))) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;

@@ -97,7 +97,8 @@ public class Cell implements Cloneable {
 				if (y == 3 || y == 6)
 					System.out.print(" | ");
 				Dimension dime = new Dimension(x, y);
-				System.out.print(DimensionUtil.getCell(sudoku, dime).getCellValue());
+				System.out.print(DimensionUtil.getCell(sudoku, dime).getCellValue() + ":"
+						+ DimensionUtil.getCell(sudoku, dime).getPossibleValues() + ";\t");
 			}
 			System.out.println(" ");
 			if (x == 2 || x == 5) {
