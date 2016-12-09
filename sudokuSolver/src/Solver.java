@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,19 +96,42 @@ public class Solver {
 		return finalDimes;
 	}
 
-	private static boolean nakedIdenticals(List<Dimension> dimes) {
+	private static boolean identicals(List<Dimension> dimes) {
+		// Have a list of checked numbers to avoid checking for the same numbers
+		// again and again
 		List<Dimension> finalDimes = new ArrayList<Dimension>(dimes);
 		for (Dimension dime : dimes) {
 			Cell cell = DimensionUtil.getCell(sudoku, dime);
+			// finalDimes.remove(dime);
 			for (int possibleVal : cell.getPossibleValues()) {
-				finalDimes.remove(dime);
 				int count = 0;
+				List<Dimension> similarLists = new ArrayList<Dimension>();
 				for (Dimension finalDime : finalDimes) {
 					Cell compareCell = DimensionUtil.getCell(sudoku, finalDime);
 					if (compareCell.getPossibleValues().contains(possibleVal)) {
+						similarLists.add(finalDime);
 						count++;
+						if (similarLists.size() > 4) {
+							break;
+						}
 					}
 				}
+				if (nakeditems(finalDimes, similarLists))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean nakeditems(List<Dimension> finalDimes, List<Dimension> similarLists) {
+		if (similarLists.size() > 1 && similarLists.size() < 5) {
+			Set<Integer> eliminateDup = new HashSet<Integer>();
+			similarLists.forEach(list -> eliminateDup.addAll(DimensionUtil.getCell(sudoku, list).getPossibleValues()));
+			if (similarLists.size() == eliminateDup.size()) {
+				finalDimes.removeAll(similarLists);
+				removeNumInPossibleValues(eliminateDup, finalDimes);
+				updatePossibleValues();
+				return true;
 			}
 		}
 		return false;
@@ -241,7 +265,7 @@ public class Solver {
 		}
 	}
 
-	private static void removeNumInPossibleValues(List<Integer> values, List<Dimension> horiLeftOutDimes) {
+	private static void removeNumInPossibleValues(Collection<Integer> values, List<Dimension> horiLeftOutDimes) {
 		for (Dimension dime : horiLeftOutDimes) {
 			DimensionUtil.getCell(sudoku, dime).getPossibleValues().removeAll(values);
 		}
