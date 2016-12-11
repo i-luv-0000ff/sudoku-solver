@@ -28,6 +28,7 @@ public class Solver {
 				if (!updateLockedCandidates1Nd2All(true))
 					if (!updateLockedCandidates1Nd2All(false))
 						identifyNakedPairs();
+			// leftOutNo();
 
 			// cloning object for real
 			sudoPrev = new Cell[9][9];
@@ -40,6 +41,67 @@ public class Solver {
 
 			Cell.displaySudoku(sudoku);
 		}
+	}
+
+	private static boolean leftOutNo() {
+		for (int x = 0; x < 9; x++) {
+			for (int y = 0; y < 9; y++) {
+				Dimension dime = new Dimension(x, y);
+				if (DimensionUtil.getCell(sudoku, dime).getCellValue() == 0) {
+
+					List<Integer> myList = new ArrayList<Integer>();
+					List<Dimension> nakedDimes = DimensionUtil.getBoxDimensions(dime);
+					if (updateLeftOutNo(dime, nakedDimes, myList))
+						return true;
+
+					myList = new ArrayList<Integer>();
+					nakedDimes = DimensionUtil.getHorizontalDimensions(dime);
+					if (updateLeftOutNo(dime, nakedDimes, myList))
+						return true;
+
+					myList = new ArrayList<Integer>();
+					nakedDimes = DimensionUtil.getVerticalDimensions(dime);
+					if (updateLeftOutNo(dime, nakedDimes, myList))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean updateLeftOutNo(Dimension dime, List<Dimension> nakedDimes, List<Integer> myList) {
+		for (Dimension mydime : nakedDimes) {
+			int inte = DimensionUtil.getCell(sudoku, mydime).getCellValue();
+			if (inte != 0) {
+				myList.add(inte);
+			}
+		}
+		if (myList.size() == 8) {
+			if (!myList.contains(1)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(1);
+			} else if (!myList.contains(2)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(2);
+			} else if (!myList.contains(3)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(3);
+			} else if (!myList.contains(4)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(4);
+			} else if (!myList.contains(5)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(5);
+			} else if (!myList.contains(6)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(6);
+			} else if (!myList.contains(7)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(7);
+			} else if (!myList.contains(8)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(8);
+			} else if (!myList.contains(9)) {
+				DimensionUtil.getCell(sudoku, dime).setCellValue(9);
+			}
+			DimensionUtil.getCell(sudoku, dime).getPossibleValues().clear();
+			DimensionUtil.getCell(sudoku, dime).updateCellValueIfPossible();
+			updatePossibleValues();
+			return true;
+		}
+		return false;
 	}
 
 	private static boolean identifyNakedPairs() {
@@ -56,21 +118,21 @@ public class Solver {
 		for (Dimension dime : dimes) {
 			List<Dimension> nakedDimes = DimensionUtil.getBoxDimensions(dime);
 			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
-			if (!nakedDimes.equals(identicals(nakedDimes))) {
+			if (identicals(nakedDimes)) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;
 			}
 			nakedDimes = DimensionUtil.getHorizontalDimensions(dime);
 			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
-			if (!nakedDimes.equals(identicals(nakedDimes))) {
+			if (identicals(nakedDimes)) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;
 			}
 			nakedDimes = DimensionUtil.getVerticalDimensions(dime);
 			nakedDimes = DimensionUtil.removeDimesWithValues(sudoku, nakedDimes);
-			if (!nakedDimes.equals(identicals(nakedDimes))) {
+			if (identicals(nakedDimes)) {
 				// TODO : Try to update only the dependents of updated values.
 				updatePossibleValues();
 				return true;
@@ -96,11 +158,12 @@ public class Solver {
 	private static boolean identicals(List<Dimension> dimes) {
 		// TODO: Have a list of checked numbers to avoid checking for the same
 		// numbers again and again
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		List<Dimension> finalDimes = new ArrayList<Dimension>(dimes);
 		for (Dimension dime : dimes) {
 			Cell cell = DimensionUtil.getCell(sudoku, dime);
-			// finalDimes.remove(dime);
-			for (int possibleVal : cell.getPossibleValues()) {
+			ArrayList<Integer> myVals = new ArrayList<Integer>(cell.getPossibleValues());
+			for (int possibleVal : myVals) {
 				List<Dimension> similarLists = new ArrayList<Dimension>();
 				for (Dimension finalDime : finalDimes) {
 					Cell compareCell = DimensionUtil.getCell(sudoku, finalDime);
@@ -112,10 +175,21 @@ public class Solver {
 					}
 				}
 				if (similarLists.size() > 1 && similarLists.size() < 5) {
-					if (nakedItems(dimes, similarLists))
-						return true;
-					else if (hiddenItems(dimes, similarLists))
-						return true;
+					for (int i = 2; i <= similarLists.size(); i++) {
+						int[] indices;
+						CombinationGenerator x = new CombinationGenerator(similarLists.size(), i);
+						while (x.hasMore()) {
+							List<Dimension> myDimes = new ArrayList<Dimension>();
+							indices = x.getNext();
+							for (int j = 0; j < indices.length; j++) {
+								myDimes.add(similarLists.get(indices[j]));
+							}
+							if (nakedItems(dimes, myDimes))
+								return true;
+							else if (hiddenItems(dimes, myDimes))
+								return true;
+						}
+					}
 				}
 			}
 		}
@@ -123,6 +197,8 @@ public class Solver {
 	}
 
 	private static boolean hiddenItems(List<Dimension> dimes, List<Dimension> similarLists) {
+		System.out.println(
+				"------------------------------------------------------------------------------------------------");
 		List<Dimension> hiddenFinalDimes = new ArrayList<Dimension>(dimes);
 		Iterator<Dimension> similarIterator = similarLists.iterator();
 		Set<Integer> eliminateDup = new HashSet<Integer>();
@@ -130,16 +206,18 @@ public class Solver {
 		eliminateDup.addAll(DimensionUtil.getCell(sudoku, similarIterator.next()).getPossibleValues());
 		while (similarIterator.hasNext()) {
 			for (Integer myInt : DimensionUtil.getCell(sudoku, similarIterator.next()).getPossibleValues())
-				if (eliminateDup.add(myInt))
+				if (!eliminateDup.add(myInt))
 					finalEliminateDup.add(myInt);
 		}
 		return nakedHiddenRemove(similarLists, hiddenFinalDimes, finalEliminateDup, true);
 	}
 
 	private static boolean nakedItems(List<Dimension> dimes, List<Dimension> similarLists) {
+		System.out.println("naked list " + similarLists);
 		List<Dimension> finalDimes = new ArrayList<Dimension>(dimes);
 		Set<Integer> eliminateDup = new HashSet<Integer>();
 		similarLists.forEach(list -> eliminateDup.addAll(DimensionUtil.getCell(sudoku, list).getPossibleValues()));
+		System.out.println("dup elim " + eliminateDup);
 		return nakedHiddenRemove(similarLists, finalDimes, eliminateDup, false);
 	}
 
@@ -147,18 +225,30 @@ public class Solver {
 			Set<Integer> eliminateDup, boolean hidden) {
 		if (similarLists.size() == eliminateDup.size()) {
 			finalDimes.removeAll(similarLists);
-			for (Integer dups : eliminateDup) {
-				for (Dimension dime : finalDimes) {
-					if (DimensionUtil.getCell(sudoku, dime).getPossibleValues().contains(dups))
+			if (hidden) {
+				for (Integer dups : eliminateDup) {
+					for (Dimension dime : finalDimes) {
+						if (DimensionUtil.getCell(sudoku, dime).getPossibleValues().contains(dups))
+							return false;
+					}
+				}
+				if (removeOtherNumInPossibleValues(eliminateDup, similarLists)) {
+					updatePossibleValues();
+					return true;
+				}
+			} else {
+				for (Dimension dime : similarLists) {
+					List<Integer> myList = new ArrayList<Integer>(
+							DimensionUtil.getCell(sudoku, dime).getPossibleValues());
+					myList.removeAll(eliminateDup);
+					if (myList.size() > 0)
 						return false;
 				}
+				if (removeNumInPossibleValues(eliminateDup, finalDimes)) {
+					updatePossibleValues();
+					return true;
+				}
 			}
-			if (hidden)
-				removeOtherNumInPossibleValues(eliminateDup, similarLists);
-			else
-				removeNumInPossibleValues(eliminateDup, finalDimes);
-			updatePossibleValues();
-			return true;
 		}
 		return false;
 	}
@@ -181,6 +271,7 @@ public class Solver {
 
 		// TODO : Think to eliminate the above 2 criteria and keep the existing
 		// code
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
 				Dimension dime = new Dimension(x, y);
@@ -224,11 +315,13 @@ public class Solver {
 		if (eliminateLckdCandInOthrBoxes(boxDimes, horiDimes, lockedCand1)) {
 			// TODO : Try to update only the dependents of updated values.
 			updatePossibleValues();
+			System.out.println("lockedhor " + lockedCand1);
 			return true;
 		}
 		if (eliminateLckdCandInOthrBoxes(boxDimes, vertDimes, lockedCand1)) {
 			// TODO : Try to update only the dependents of updated values.
 			updatePossibleValues();
+			System.out.println("lockedver " + lockedCand1);
 			return true;
 		}
 
@@ -270,9 +363,10 @@ public class Solver {
 				}
 			}
 			if (unique) {
-				removeNumInPossibleValues(eachValue, lockedCand1 ? new ArrayList<Dimension>(leftOutDimes)
-						: new ArrayList<Dimension>(boxLeftOutDimes));
-				return true;
+				System.out.println("unique val " + eachValue);
+				if (removeNumInPossibleValues(eachValue, lockedCand1 ? new ArrayList<Dimension>(leftOutDimes)
+						: new ArrayList<Dimension>(boxLeftOutDimes)))
+					return true;
 			}
 		}
 		return false;
@@ -285,28 +379,37 @@ public class Solver {
 	 * @param eachValue
 	 * @param horiLeftOutDimes
 	 */
-	private static void removeNumInPossibleValues(Integer eachValue, List<Dimension> horiLeftOutDimes) {
+	private static boolean removeNumInPossibleValues(Integer eachValue, List<Dimension> horiLeftOutDimes) {
+		boolean myRetVal = false;
 		for (Dimension dime : horiLeftOutDimes) {
-			DimensionUtil.getCell(sudoku, dime).getPossibleValues().remove(new Integer(eachValue));
+			myRetVal = DimensionUtil.getCell(sudoku, dime).getPossibleValues().remove(new Integer(eachValue)) ? true
+					: myRetVal;
 		}
+		return myRetVal;
 	}
 
-	private static void removeNumInPossibleValues(Collection<Integer> values, List<Dimension> horiLeftOutDimes) {
+	private static boolean removeNumInPossibleValues(Collection<Integer> values, List<Dimension> horiLeftOutDimes) {
+		boolean myRetVal = false;
 		for (Dimension dime : horiLeftOutDimes) {
-			DimensionUtil.getCell(sudoku, dime).getPossibleValues().removeAll(values);
+			myRetVal = DimensionUtil.getCell(sudoku, dime).getPossibleValues().removeAll(values) ? true : myRetVal;
 		}
+		return myRetVal;
 	}
 
-	private static void removeOtherNumInPossibleValues(Collection<Integer> values, List<Dimension> horiLeftOutDimes) {
+	private static boolean removeOtherNumInPossibleValues(Collection<Integer> values,
+			List<Dimension> horiLeftOutDimes) {
+		boolean myRetVal = false;
 		for (Dimension dime : horiLeftOutDimes) {
 			List<Integer> myList = new ArrayList<Integer>();
 			DimensionUtil.getCell(sudoku, dime).getPossibleValues().forEach(val -> {
-				if (!values.contains(val))
+				if (values.contains(val))
 					myList.add(val);
 			});
+			myRetVal = !DimensionUtil.getCell(sudoku, dime).getPossibleValues().equals(myList) ? true : myRetVal;
 			DimensionUtil.getCell(sudoku, dime).getPossibleValues().clear();
 			DimensionUtil.getCell(sudoku, dime).getPossibleValues().addAll(myList);
 		}
+		return myRetVal;
 	}
 
 	/**
